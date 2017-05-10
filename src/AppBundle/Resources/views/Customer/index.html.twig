@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1 class="page-header">Customers</h1>
+    <table class="table table-responsive table-hover">
+        <thead>
+        <th>Name</th>
+        <th>E-mail</th>
+        <th>Address</th>
+        <th>Works</th>
+
+        </thead>
+        <tbody>
+
+        {% for customer in customers %}
+            <tr id="{{ customer.id }}">
+
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.address }}</td>
+                <td>{% if customer.works.count==0 %}-{% else %}{{ customer.works.count}}{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <a href="/customers/create" class="btn btn-primary">ADD</a>
+    <a href="#" class="btn btn-danger hidden" id="delete">DELETE</a>
+    <a href="#" class="btn btn-default hidden" id="edit">EDIT</a>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $( document ).ready(function() {
+            $("tr").on('click',function( event ) {
+                $("#delete").removeClass("hidden");
+                $("#edit").removeClass("hidden");
+                $("tr").removeClass('active');
+                $(this).not("thead tr").addClass('active');
+                $("#delete").attr('href','/customers/delete/'+event.target.parentNode.id);
+                $("#edit").attr('href','/customers/edit/'+event.target.parentNode.id);
+            });
+        });
+    </script>
+{% endblock %}

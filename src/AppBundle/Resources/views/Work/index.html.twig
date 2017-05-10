@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <h1 class="page-header">Works</h1>
+    <table class="table table-responsive table-hover">
+        <thead>
+        <th>Name</th>
+        <th>Notes</th>
+        <th>Worker</th>
+        <th>Work Category</th>
+        <th>Customer</th>
+        <th>isDone</th>
+        </thead>
+        <tbody>
+
+        {% for work in works %}
+            {% if is_granted("ROLE_CUSTOMER") %}
+                {% for customer in customers %}
+                    {% if work.customer.name == customer.name and app.user.username == customer.account %}
+                        <tr id="{{ work.id }}">
+                            <td>{{ work.theme }}</td>
+                            <td>{{ work.notes|slice(0,30) }}</td>
+                            <td>{{ work.worker.name }}</td>
+                            <td>{{ work.category.name }}</td>
+                            <td>{{ work.customer.name|default("-") }}</td>
+                            <td>{% if work.isDone==0 %}Not yet{% else %}Done{% endif %}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+            {% if is_granted("ROLE_MANAGER") %}
+                <tr id="{{ work.id }}">
+                    <td>{{ work.theme }}</td>
+                    <td>{{ work.notes|slice(0,30) }}</td>
+                    <td>{{ work.worker.name }}</td>
+                    <td>{{ work.category.name }}</td>
+                    <td>{{ work.customer.name|default("-") }}</td>
+                    <td>{% if work.isDone==0 %}Not yet{% else %}Done{% endif %}</td>
+                </tr>
+            {% endif %}
+            {% if is_granted("ROLE_WORKER") %}
+                {% for worker in workers %}
+                    {% if work.worker.name == worker.name and app.user.username == worker.account %}
+                        <tr id="{{ work.id }}">
+                            <td>{{ work.theme }}</td>
+                            <td>{{ work.notes|slice(0,30) }}</td>
+                            <td>{{ work.worker.name }}</td>
+                            <td>{{ work.category.name }}</td>
+                            <td>{{ work.customer.name|default("-") }}</td>
+                            <td>{% if work.isDone==0 %}Not yet{% else %}Done{% endif %}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_granted("ROLE_MANAGER") %}
+        <a href="/works/create" class="btn btn-primary">ADD</a>
+        <a href="#" class="btn btn-danger hidden" id="delete">DELETE</a>
+        <a href="#" class="btn btn-default hidden" id="edit">EDIT</a>
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $( document ).ready(function() {
+            $("tr").on('click',function( event ) {
+                $("#delete").removeClass("hidden");
+                $("#edit").removeClass("hidden");
+                $("tr").removeClass('active');
+                $(this).not("thead tr").addClass('active');
+                $("#delete").attr('href','/works/delete/'+event.target.parentNode.id);
+                $("#edit").attr('href','/works/edit/'+event.target.parentNode.id);
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}AppBundle:Main:index{% endblock %}
+
+{% block body %}
+<h1>Welcome in our helpdesk
+    {% if is_granted("IS_AUTHENTICATED_REMEMBERED") %}
+        <b>{{ app.user.username }}</b>
+    {% endif %}
+    <img src="{{ asset('img/dog.png') }}" alt="dog" width="400px" height="400px">
+</h1>
+{% endblock %}
